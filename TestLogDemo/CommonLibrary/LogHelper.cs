@@ -66,9 +66,13 @@ namespace CommonLibrary
                             var secondPart = newFileNameStr.Split(Path.DirectorySeparatorChar).Last();
                             if (firstPart == lastFAppDirectoryName)
                             {
-                                var trimNewFileNameStr = newFileNameStr.Split('\\').Last();
-                                updatedFileNameStr = Path.Combine(directory, trimNewFileNameStr, processId);
-                                fApp.File = updatedFileNameStr;
+                                if (secondPart==secondlastFAppDirectoryName)
+                                {
+                                    var trimNewFileNameStr = newFileNameStr.Split('\\').Last();
+                                    updatedFileNameStr = Path.Combine(directory, trimNewFileNameStr, processId);
+                                    fApp.File = updatedFileNameStr;
+                                }
+                               
                             }
                         }
                         else
