@@ -1,28 +1,47 @@
-﻿using log4net;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using log4net;
 using log4net.Appender;
 
 namespace CommonLibrary
 {
     public class LogHelper
     {
-        public static void LogWriter(string methodName, string logInfor, string logPath = "")
+        public static void LogWriter(string methodName, string logInfo, string logPath = "")
         {
-            ChangeLogFileName("ErrorAppender", PathGenerator(logPath));
-            ILog logInfoNew = LogManager.GetLogger("logerror");
-            logInfoNew.InfoFormat("方法是：{0},消息是：{1}", methodName, logInfor);
+            var sb = new StringBuilder();
+            sb.AppendFormat("{0}", methodName);
+            sb.AppendLine();
+            sb.AppendFormat("{0}", logInfo);
+            ChangeLogFileName("LogFileAppender", logPath);
+            ILog logInfoNew = LogManager.GetLogger("InfoLogging");
+            logInfoNew.Info(sb.ToString());
         }
 
-        public static void LogWriterFolder(string methodName, string logInfor, string folderName, string logPath = "")
+        public static void LogWriterFolder(string methodName, string logInfo, string folderName, string logPath = "")
         {
-            ChangeLogFileName("ErrorAppender",
-                string.Format(@"{0}{1}", PathGenerator(logPath), PathGenerator(folderName)));
-            ILog logInfoNew = LogManager.GetLogger("logerror");
-            logInfoNew.InfoFormat("方法是：{0},消息是：{1}", methodName, logInfor);
+            var sb = new StringBuilder();
+            sb.AppendFormat("{0}", methodName);
+            sb.AppendLine();
+            sb.AppendFormat("{0}", logInfo);
+            ChangeLogFileName("LogFileAppender",
+                string.Format(@"{0}\{1}", logPath, folderName));
+            ILog logInfoNew = LogManager.GetLogger("InfoLogging");
+            logInfoNew.Info(sb.ToString());
         }
 
         private static bool ChangeLogFileName(string appenderNameStr, string newFileNameStr)
         {
+            if (string.IsNullOrEmpty(newFileNameStr))
+            {
+                return true;
+            }
+
             log4net.Repository.ILoggerRepository rootRep = LogManager.GetRepository();
+
+
             foreach (IAppender iApp in rootRep.GetAppenders())
             {
                 string appenderName = iApp.Name;
@@ -30,28 +49,41 @@ namespace CommonLibrary
                     && iApp is FileAppender)
                 {
                     FileAppender fApp = (FileAppender) iApp;
-                    fApp.File = newFileNameStr;
+
+                    var directory = Path.GetDirectoryName(fApp.File);
+                    var fileName = Path.GetFileName(fApp.File);
+                    var lastFAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).Last();
+                    var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
+                    fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
+                    var secondlastFAppDirectoryName = fAppDirectoryName.Last();
+                    if (!string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(directory))
+                    {
+                        var processId = fileName.Split('-').First();
+                        string updatedFileNameStr;
+                        if (newFileNameStr.Contains(@"\"))
+                        {
+                            var firstPart = newFileNameStr.Split(Path.DirectorySeparatorChar).First();
+                            var secondPart = newFileNameStr.Split(Path.DirectorySeparatorChar).Last();
+                            if (firstPart == lastFAppDirectoryName)
+                            {
+                                var trimNewFileNameStr = newFileNameStr.Split('\\').Last();
+                                updatedFileNameStr = Path.Combine(directory, trimNewFileNameStr, processId);
+                                fApp.File = updatedFileNameStr;
+                            }
+                        }
+                        else
+                        {
+                            updatedFileNameStr = Path.Combine(directory, newFileNameStr, processId);
+                            fApp.File = updatedFileNameStr;
+                        }
+                    }
+
                     fApp.ActivateOptions();
                     return true; // 找到对应Appender，修改FileName
                 }
             }
 
             return false; // 没有找到Appender
-        }
-
-        /// <summary>
-        /// 方便日志路径，自动补全"\\"反斜杠
-        /// </summary>
-        /// <param name="pathStr"></param>
-        /// <returns></returns>
-        private static string PathGenerator(string pathStr)
-        {
-            if (string.IsNullOrEmpty(pathStr) || string.IsNullOrWhiteSpace(pathStr))
-            {
-                return "DefaultLog\\";
-            }
-
-            return pathStr + "\\";
         }
     }
 }

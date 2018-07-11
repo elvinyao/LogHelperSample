@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using CommonLibrary;
 
 public partial class Account_Login : Page
 {
@@ -12,8 +11,7 @@ public partial class Account_Login : Page
     {
         RegisterHyperLink.NavigateUrl = "Register";
         OpenAuthLogin.ReturnUrl = Request.QueryString["ReturnUrl"];
-        LogHelper.LogWriter("pageLoad","website测试121212");
-        LogHelper.LogWriterFolder("pageLoad","website测试again121212","firstFolder");
+
         var returnUrl = HttpUtility.UrlEncode(Request.QueryString["ReturnUrl"]);
         if (!String.IsNullOrEmpty(returnUrl))
         {

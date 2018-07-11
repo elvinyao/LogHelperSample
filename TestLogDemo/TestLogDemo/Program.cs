@@ -11,8 +11,9 @@ namespace TestLogDemo
         static void Main(string[] args)
         {
             Console.WriteLine("starting log");
-            LogHelper.LogWriter("ProgramMain","哈哈，这是一个测试信息","FirstLogPath");
-            LogHelper.LogWriterFolder("ProgramMain","哈哈，这是一个测试信息again","FirstFolder", "FirstLogPath");
+            LogHelper.LogWriter("ProgramMainc", "哈哈，这是一个测试信息asdfaasdasd", "FirstLogPath");
+            LogHelper.LogWriterFolder("ProgramMainc", "哈哈，这是一个测试信息asdasdzzxxcagain", "FirstFolder", "FirstLogPath");
+            LogHelper.LogWriterFolder("ProgramMaincd", "ccc哈哈，这是一个测试信息asdasdzzxxcagain", "FirstFolder", "FirstLogPath2");
             Console.ReadKey();
         }
     }
