@@ -9,7 +9,7 @@ namespace CommonLibrary
 {
     public static class LogHelper
     {
-        private static readonly string AppLogsPath = "App_Logs";
+        private static readonly string AppLogsPath = "Logs";
         private static readonly string LogFileAppender = "LogFileAppender";
         private static readonly string InfoLogging = "InfoLogging";
 

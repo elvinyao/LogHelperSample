@@ -11,7 +11,7 @@ namespace Log4NetHelper_Tests
     [TestFixture]
     public class TestForLog4NetHelper
     {
-        private static readonly string AppLogsPath = "App_Logs";
+        private static readonly string AppLogsPath = "Logs";
         [SetUp]
         protected void Setup()
         {
