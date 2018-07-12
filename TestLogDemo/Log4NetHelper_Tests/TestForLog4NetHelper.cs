@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
 using CommonLibrary;
+using log4net;
 using log4net.Appender;
 using NUnit.Framework;
 using Shouldly;
@@ -13,62 +11,114 @@ namespace Log4NetHelper_Tests
     [TestFixture]
     public class TestForLog4NetHelper
     {
-        private string secondlastFAppDirectoryName;
-        private string lastFAppDirectoryName;
-
         [SetUp]
         protected void Setup()
         {
         }
 
-        [Test]
-        public void CheckOne()
-        {
-            LogHelper.LogWriter("aa", "info1");
-            InitialQueryFileAppender();
+        private string lastbutOneFAppDirectoryName;
+        private string lastFAppDirectoryName;
 
-            lastFAppDirectoryName.ShouldBe("App_Logs");
-            secondlastFAppDirectoryName.ShouldBe("Debug");
+        private void InitialQueryFileAppender()
+        {
+            LogManager.GetCurrentLoggers().Length.ShouldBe(1);
+
+            var appender = LogManager.GetRepository().GetAppenders();
+            appender.Length.ShouldBe(1);
+
+            var fApp = (FileAppender) appender.First();
+            fApp.ShouldNotBeNull();
+            fApp.File.ShouldNotBeNull();
+
+            var directory = Path.GetDirectoryName(fApp.File);
+            var fileName = Path.GetFileName(fApp.File);
+            directory.ShouldNotBeNull();
+            fileName.ShouldNotBeNull();
+            fileName.ShouldContain("[");
+            fileName.ShouldContain("]");
+
+            lastFAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).Last();
+            var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
+
+            fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
+            lastbutOneFAppDirectoryName = fAppDirectoryName.Last();
         }
 
         [Test]
-        public void CheckTwo()
-        {
-            LogHelper.LogWriter("aa", "info1", "path1");
-
-            InitialQueryFileAppender();
-
-            lastFAppDirectoryName.ShouldBe("path1");
-            secondlastFAppDirectoryName.ShouldBe("App_Logs");
-        }
-
-        [Test]
-        public void CheckThree()
+        public void CheckLogWriterFolder()
         {
             LogHelper.LogWriterFolder("aa", "info1", "folder1", "path1");
 
             InitialQueryFileAppender();
 
             lastFAppDirectoryName.ShouldBe("folder1");
-            secondlastFAppDirectoryName.ShouldBe("path1");
+            lastbutOneFAppDirectoryName.ShouldBe("path1");
         }
 
-        private void InitialQueryFileAppender()
+
+        [Test]
+        public void CheckLogWriterFolderAlongWithLogWriter()
         {
-            log4net.LogManager.GetCurrentLoggers().Length.ShouldBe(1);
+            LogHelper.LogWriterFolder("aa", "info1", "folder1", "path1");
+            InitialQueryFileAppender();
 
-            var appender = log4net.LogManager.GetRepository().GetAppenders();
-            appender.Length.ShouldBe(1);
+            lastFAppDirectoryName.ShouldBe("folder1");
+            lastbutOneFAppDirectoryName.ShouldBe("path1");
 
-            var fApp = (FileAppender) appender.First();
+            LogHelper.LogWriter("aa", "info1", "path1");
 
+            InitialQueryFileAppender();
 
-            var directory = Path.GetDirectoryName(fApp.File);
-            var fileName = Path.GetFileName(fApp.File);
-            lastFAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).Last();
-            var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
-            fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
-            secondlastFAppDirectoryName = fAppDirectoryName.Last();
+            lastFAppDirectoryName.ShouldBe("path1");
+            lastbutOneFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+        }
+
+        [Test]
+        public void CheckLogWriterFolderAlongWithLogWriterAnother()
+        {
+            LogHelper.LogWriterFolder("aa", "info1", "folder1", "path1");
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("folder1");
+            lastbutOneFAppDirectoryName.ShouldBe("path1");
+
+            LogHelper.LogWriterFolder("aa", "info1", "folder2", "path2");
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("folder2");
+            lastbutOneFAppDirectoryName.ShouldBe("path2");
+
+            LogHelper.LogWriter("aa", "info1", "path1");
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("path1");
+            lastbutOneFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+
+            LogHelper.LogWriter("aa", "info1");
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+        }
+
+        [Test]
+        public void CheckLogWriterWithoutPath()
+        {
+            LogHelper.LogWriter("aa", "info1");
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+            lastbutOneFAppDirectoryName.ShouldBe("Debug");
+        }
+
+        [Test]
+        public void CheckLogWriterWithPath()
+        {
+            LogHelper.LogWriter("aa", "info1", "path1");
+
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("path1");
+            lastbutOneFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
         }
     }
 }
