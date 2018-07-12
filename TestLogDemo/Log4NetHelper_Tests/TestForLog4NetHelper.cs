@@ -11,6 +11,7 @@ namespace Log4NetHelper_Tests
     [TestFixture]
     public class TestForLog4NetHelper
     {
+        private static readonly string AppLogsPath = "App_Logs";
         [SetUp]
         protected void Setup()
         {
@@ -70,7 +71,7 @@ namespace Log4NetHelper_Tests
             InitialQueryFileAppender();
 
             lastFAppDirectoryName.ShouldBe("path1");
-            lastbutOneFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+            lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
         }
 
         [Test]
@@ -92,12 +93,12 @@ namespace Log4NetHelper_Tests
             InitialQueryFileAppender();
 
             lastFAppDirectoryName.ShouldBe("path1");
-            lastbutOneFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+            lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
 
             LogHelper.LogWriter("aa", "info1");
             InitialQueryFileAppender();
 
-            lastFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+            lastFAppDirectoryName.ShouldBe(AppLogsPath);
         }
 
         [Test]
@@ -106,7 +107,7 @@ namespace Log4NetHelper_Tests
             LogHelper.LogWriter("aa", "info1");
             InitialQueryFileAppender();
 
-            lastFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+            lastFAppDirectoryName.ShouldBe(AppLogsPath);
             lastbutOneFAppDirectoryName.ShouldBe("Debug");
         }
 
@@ -118,7 +119,7 @@ namespace Log4NetHelper_Tests
             InitialQueryFileAppender();
 
             lastFAppDirectoryName.ShouldBe("path1");
-            lastbutOneFAppDirectoryName.ShouldBe(LogHelper.AppLogsPath);
+            lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
         }
     }
 }
