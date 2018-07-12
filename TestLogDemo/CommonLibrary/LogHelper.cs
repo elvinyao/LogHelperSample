@@ -19,7 +19,7 @@ namespace CommonLibrary
             sb.AppendFormat("{0}", methodName);
             sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
-            ChangeLogFileName(LogFileAppender, logPath);
+            ChangeFilePath(LogFileAppender, logPath);
             var logInfoNew = LogManager.GetLogger(InfoLogging);
             logInfoNew.Info(sb.ToString());
         }
@@ -30,12 +30,12 @@ namespace CommonLibrary
             sb.AppendFormat("{0}", methodName);
             sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
-            ChangeLogFileName(LogFileAppender, string.Format(@"{0}\{1}", logPath, folderName));
+            ChangeFilePath(LogFileAppender, string.Format(@"{0}\{1}", logPath, folderName));
             var logInfoNew = LogManager.GetLogger(InfoLogging);
             logInfoNew.Info(sb.ToString());
         }
 
-        private static void ChangeLogFileName(string appenderNameStr, string newFileNameStr)
+        private static void ChangeFilePath(string appenderNameStr, string pathAndFolderName)
         {
             var rootRep = LogManager.GetRepository();
 
@@ -61,7 +61,7 @@ namespace CommonLibrary
                     {
                         var processId = fileName.Split('-').First();
 
-                        var updatedFileNameStr = Path.Combine(rootDomainPath, newFileNameStr, processId);
+                        var updatedFileNameStr = Path.Combine(rootDomainPath, pathAndFolderName, processId);
                         fApp.File = updatedFileNameStr;
                     }
 
