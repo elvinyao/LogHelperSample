@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using log4net;
 using log4net.Appender;
@@ -21,14 +20,11 @@ namespace CommonLibrary
         /// <param name="logPath">路径</param>
         public static void LogWriter(string methodName, string logInfo, string logPath = "")
         {
-            var sb = new StringBuilder();
-            sb.AppendFormat("{0}", methodName);
-            sb.AppendLine();
-            sb.AppendFormat("{0}", logInfo);
-            ChangeFilePath(LogFileAppender, logPath);
-            var logInfoNew = LogManager.GetLogger(InfoLogging);
-            logInfoNew.Info(sb.ToString());
+            ChangeFilePath(LogFileAppender, PathCombine(logPath));
+            ILog logInfoNew = LogManager.GetLogger(InfoLogging);
+            logInfoNew.InfoFormat(LogMessageCombine(methodName, logInfo));
         }
+
         /// <summary>
         /// 日志记录方法B，包含logPath和子文件夹FolderName
         /// </summary>
@@ -38,49 +34,62 @@ namespace CommonLibrary
         /// <param name="logPath">日志路径</param>
         public static void LogWriterFolder(string methodName, string logInfo, string folderName, string logPath = "")
         {
+            ChangeFilePath(LogFileAppender, PathCombine(logPath, folderName));
+            ILog logInfoNew = LogManager.GetLogger(InfoLogging);
+            logInfoNew.InfoFormat(LogMessageCombine(methodName, logInfo));
+        }
+
+        private static void ChangeFilePath(string appenderNameStr, string newFileNameStr)
+        {
+            log4net.Repository.ILoggerRepository rootRep = LogManager.GetRepository();
+            foreach (IAppender iApp in rootRep.GetAppenders())
+            {
+                string appenderName = iApp.Name;
+                if (appenderName.CompareTo(appenderNameStr) == 0
+                    && iApp is FileAppender)
+                {
+                    FileAppender fApp = (FileAppender) iApp;
+                    fApp.File = newFileNameStr;
+                    fApp.ActivateOptions();
+                    // 找到对应Appender，修改FileName
+                }
+            }
+            log4net.GlobalContext.Properties["pid"] = Process.GetCurrentProcess().Id;
+
+            // 没有找到Appender
+        }
+
+        /// <summary>
+        /// 方便日志路径，自动补全"\\"反斜杠
+        /// </summary>
+        /// <param name="pathOne"></param>
+        /// <param name="pathTwo"></param>
+        /// <returns></returns>
+        private static string PathCombine(string pathOne, string pathTwo = "")
+        {
+            if (pathOne == "")
+            {
+                return AppLogsPath + "\\";
+            }
+
+            var returnPathValue = Path.Combine(AppLogsPath, pathOne, pathTwo);
+
+            return returnPathValue + "\\";
+        }
+
+        /// <summary>
+        /// 日志消息生成
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <param name="logInfo"></param>
+        /// <returns></returns>
+        private static string LogMessageCombine(string methodName, string logInfo)
+        {
             var sb = new StringBuilder();
             sb.AppendFormat("{0}", methodName);
             sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
-            ChangeFilePath(LogFileAppender, string.Format(@"{0}\{1}", logPath, folderName));
-            var logInfoNew = LogManager.GetLogger(InfoLogging);
-            logInfoNew.Info(sb.ToString());
+            return sb.ToString();
         }
-
-        private static void ChangeFilePath(string appenderNameStr, string pathAndFolderName)
-        {
-            var rootRep = LogManager.GetRepository();
-
-            foreach (var iApp in rootRep.GetAppenders())
-            {
-                var appenderName = iApp.Name;
-                if (appenderName.CompareTo(appenderNameStr) == 0 && iApp is FileAppender)
-                {
-                    var fApp = (FileAppender) iApp;
-
-                    var appDomainPath = AppDomain.CurrentDomain.BaseDirectory;
-                    var rootDomainPath = Path.Combine(appDomainPath, AppLogsPath);
-
-                    var directory = Path.GetDirectoryName(fApp.File);
-                    var fileName = Path.GetFileName(fApp.File);
-
-                    var lastFAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).Last();
-                    var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
-                    fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
-                    var secondlastFAppDirectoryName = fAppDirectoryName.Last();
-
-                    if (!string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(directory))
-                    {
-                        var processId = fileName.Split('-').First();
-
-                        var updatedFileNameStr = Path.Combine(rootDomainPath, pathAndFolderName, processId);
-                        fApp.File = updatedFileNameStr;
-                    }
-
-                    fApp.ActivateOptions();
-                }
-            }
-        }
-        
     }
 }
