@@ -35,8 +35,8 @@ namespace Log4NetHelper_Tests
             var fileName = Path.GetFileName(fApp.File);
             directory.ShouldNotBeNull();
             fileName.ShouldNotBeNull();
-            //fileName.ShouldContain("[");
-            //fileName.ShouldContain("]");
+            fileName.ShouldContain("[");
+            fileName.ShouldContain("]");
 
             lastFAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).Last();
             var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
