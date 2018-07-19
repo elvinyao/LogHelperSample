@@ -1,5 +1,5 @@
 ﻿<%@ Application Language="C#" %>
-<%@ Import Namespace="WebFormsWebSite" %>
+<%@ Import Namespace="WebSiteDemo" %>
 <%@ Import Namespace="System.Web.Routing" %>
 
 <script runat="server">
