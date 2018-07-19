@@ -56,7 +56,7 @@ namespace CommonLibrary
             foreach (var iApp in rootRep.GetAppenders())
             {
                 var appenderName = iApp.Name;
-                if (appenderName.CompareTo(appenderNameStr) == 0 && iApp is FileAppender)
+                if (String.Compare(appenderName, appenderNameStr, StringComparison.CurrentCulture) == 0 && iApp is FileAppender)
                 {
                     var fApp = (FileAppender) iApp;
 
@@ -66,10 +66,11 @@ namespace CommonLibrary
                     var directory = Path.GetDirectoryName(fApp.File);
                     var fileName = Path.GetFileName(fApp.File);
 
-                    var lastFAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).Last();
-                    var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
-                    fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
-                    var secondlastFAppDirectoryName = fAppDirectoryName.Last();
+                    if (directory != null)
+                    {
+                        var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
+                        fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
+                    }
 
                     if (!string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(directory))
                     {
@@ -83,7 +84,7 @@ namespace CommonLibrary
                 }
             }
 
-            log4net.GlobalContext.Properties["pid"] = Process.GetCurrentProcess().Id;
+            GlobalContext.Properties["pid"] = Process.GetCurrentProcess().Id;
         }
     }
 
