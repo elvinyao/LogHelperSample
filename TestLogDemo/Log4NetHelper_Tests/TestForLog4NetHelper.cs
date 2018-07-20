@@ -118,6 +118,22 @@ namespace Log4NetHelper_Tests
 
             lastFAppDirectoryName.ShouldBe(AppLogsPath);
             lastbutOneFAppDirectoryName.ShouldBe("Debug");
+
+
+            LogHelper.LogWriterFolder("aa", "info1", "", "a");
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("a");
+            lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
+            lastbutTwoFAppDirectoryName.ShouldNotBe(AppLogsPath);
+
+
+            LogHelper.LogWriterFolder("aa", "info1", "b", "");
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("b");
+            lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
+            lastbutTwoFAppDirectoryName.ShouldNotBe(AppLogsPath);
         }
 
 

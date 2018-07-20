@@ -107,13 +107,24 @@ namespace CommonLibrary
         /// <returns></returns>
         private static string PathCombineForFolderAndPath(string folderName = "", string pathName = "")
         {
+            string returnPathValue = "";
             if (string.IsNullOrEmpty(folderName) && string.IsNullOrEmpty(pathName))
             {
-                return "";
+                return returnPathValue;
+            }
+            else if (string.IsNullOrEmpty(folderName)&& !string.IsNullOrEmpty(pathName))
+            {
+                returnPathValue = Path.Combine(pathName);
+                return returnPathValue + "\\";
+            }
+            else if (!string.IsNullOrEmpty(folderName) && string.IsNullOrEmpty(pathName))
+            {
+                returnPathValue = Path.Combine(folderName);
+                return returnPathValue + "\\";
             }
             else
             {
-                var returnPathValue = Path.Combine(pathName, folderName);
+                returnPathValue = Path.Combine(pathName, folderName);
                 return returnPathValue + "\\";
             }
         }
