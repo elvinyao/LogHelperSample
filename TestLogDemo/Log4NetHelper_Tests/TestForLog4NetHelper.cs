@@ -20,6 +20,8 @@ namespace Log4NetHelper_Tests
 
         private string lastbutOneFAppDirectoryName;
         private string lastFAppDirectoryName;
+        private string lastbutTwoFAppDirectoryName;
+        private string lastbutThreeFAppDirectoryName;
 
         private void InitialQueryFileAppender()
         {
@@ -44,17 +46,23 @@ namespace Log4NetHelper_Tests
 
             fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
             lastbutOneFAppDirectoryName = fAppDirectoryName.Last();
+
+            fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
+            lastbutTwoFAppDirectoryName = fAppDirectoryName.Last();
+
+            fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
+            lastbutThreeFAppDirectoryName = fAppDirectoryName.Last();
         }
 
         [Test]
         public void CheckLogWriterFolderOnly()
         {
             LogHelper.LogWriterFolder("aa", "info1", "folder1");
-
             InitialQueryFileAppender();
 
             lastFAppDirectoryName.ShouldBe("folder1");
             lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
+            lastbutTwoFAppDirectoryName.ShouldNotBe(AppLogsPath);
 
             LogHelper.LogWriterFolder("aa", "info1", "folder1", "pathhello2");
 
@@ -62,6 +70,8 @@ namespace Log4NetHelper_Tests
 
             lastFAppDirectoryName.ShouldBe("folder1");
             lastbutOneFAppDirectoryName.ShouldBe("pathhello2");
+            lastbutTwoFAppDirectoryName.ShouldBe(AppLogsPath);
+            lastbutThreeFAppDirectoryName.ShouldNotBe(AppLogsPath);
 
             LogHelper.LogWriter("aa", "info1", "pathhello1");
 
@@ -69,6 +79,7 @@ namespace Log4NetHelper_Tests
 
             lastFAppDirectoryName.ShouldBe("pathhello1");
             lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
+            lastbutTwoFAppDirectoryName.ShouldNotBe(AppLogsPath);
 
             LogHelper.LogWriter("aa", "info1");
 
@@ -76,6 +87,7 @@ namespace Log4NetHelper_Tests
 
             lastFAppDirectoryName.ShouldBe(AppLogsPath);
             lastbutOneFAppDirectoryName.ShouldBe("Debug");
+            lastbutTwoFAppDirectoryName.ShouldNotBe(AppLogsPath);
         }
 
         [Test]

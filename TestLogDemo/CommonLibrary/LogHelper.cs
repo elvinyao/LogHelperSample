@@ -67,12 +67,6 @@ namespace CommonLibrary
                     var directory = Path.GetDirectoryName(fApp.File);
                     var fileName = Path.GetFileName(fApp.File);
 
-                    if (directory != null)
-                    {
-                        var fAppDirectoryName = directory.Split(Path.DirectorySeparatorChar).ToList();
-                        fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
-                    }
-
                     if (!string.IsNullOrEmpty(fileName) && !string.IsNullOrEmpty(directory))
                     {
                         var processId = fileName.Split('-').First();
@@ -100,7 +94,7 @@ namespace CommonLibrary
                 return "";
             }
 
-            var returnPathValue = Path.Combine(AppLogsPath, pathName);
+            var returnPathValue = Path.Combine(pathName);
 
             return returnPathValue + "\\";
         }
@@ -113,7 +107,7 @@ namespace CommonLibrary
         /// <returns></returns>
         private static string PathCombineForFolderAndPath(string folderName = "", string pathName = "")
         {
-            var returnPathValue = Path.Combine(AppLogsPath, pathName, folderName);
+            var returnPathValue = Path.Combine(pathName, folderName);
 
             return returnPathValue + "\\";
         }
