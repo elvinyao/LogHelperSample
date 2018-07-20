@@ -26,7 +26,7 @@ namespace CommonLibrary
             sb.AppendFormat("{0}", methodName);
             sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
-            ChangeFilePath(LogFileAppender, logPath);
+            ChangeFilePath(LogFileAppender, PathCombineForPath(logPath));
             var logInfoNew = LogManager.GetLogger(InfoLogging);
             logInfoNew.Info(sb.ToString());
         }
@@ -44,7 +44,7 @@ namespace CommonLibrary
             sb.AppendFormat("{0}", methodName);
             sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
-            ChangeFilePath(LogFileAppender, string.Format(@"{0}\{1}", logPath, folderName));
+            ChangeFilePath(LogFileAppender, PathCombineForFolderAndPath(folderName, logPath));
             var logInfoNew = LogManager.GetLogger(InfoLogging);
             logInfoNew.Info(sb.ToString());
         }
@@ -56,7 +56,8 @@ namespace CommonLibrary
             foreach (var iApp in rootRep.GetAppenders())
             {
                 var appenderName = iApp.Name;
-                if (String.Compare(appenderName, appenderNameStr, StringComparison.CurrentCulture) == 0 && iApp is FileAppender)
+                if (String.Compare(appenderName, appenderNameStr, StringComparison.CurrentCulture) == 0 &&
+                    iApp is FileAppender)
                 {
                     var fApp = (FileAppender) iApp;
 
@@ -85,6 +86,36 @@ namespace CommonLibrary
             }
 
             GlobalContext.Properties["pid"] = Process.GetCurrentProcess().Id;
+        }
+
+        /// <summary>
+        /// 方便日志路径，自动补全"\\"反斜杠
+        /// </summary>
+        /// <param name="pathName"></param>
+        /// <returns></returns>
+        private static string PathCombineForPath(string pathName = "")
+        {
+            if (string.IsNullOrEmpty(pathName))
+            {
+                return "";
+            }
+
+            var returnPathValue = Path.Combine(AppLogsPath, pathName);
+
+            return returnPathValue + "\\";
+        }
+
+        /// <summary>
+        /// 方便日志路径，自动补全"\\"反斜杠
+        /// </summary>
+        /// <param name="folderName"></param>
+        /// <param name="pathName"></param>
+        /// <returns></returns>
+        private static string PathCombineForFolderAndPath(string folderName = "", string pathName = "")
+        {
+            var returnPathValue = Path.Combine(AppLogsPath, pathName, folderName);
+
+            return returnPathValue + "\\";
         }
     }
 

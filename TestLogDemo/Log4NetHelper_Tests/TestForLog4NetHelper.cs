@@ -12,6 +12,7 @@ namespace Log4NetHelper_Tests
     public class TestForLog4NetHelper
     {
         private static readonly string AppLogsPath = "Logs";
+
         [SetUp]
         protected void Setup()
         {
@@ -43,6 +44,38 @@ namespace Log4NetHelper_Tests
 
             fAppDirectoryName.RemoveAt(fAppDirectoryName.Count - 1);
             lastbutOneFAppDirectoryName = fAppDirectoryName.Last();
+        }
+
+        [Test]
+        public void CheckLogWriterFolderOnly()
+        {
+            LogHelper.LogWriterFolder("aa", "info1", "folder1");
+
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("folder1");
+            lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
+
+            LogHelper.LogWriterFolder("aa", "info1", "folder1", "pathhello2");
+
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("folder1");
+            lastbutOneFAppDirectoryName.ShouldBe("pathhello2");
+
+            LogHelper.LogWriter("aa", "info1", "pathhello1");
+
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe("pathhello1");
+            lastbutOneFAppDirectoryName.ShouldBe(AppLogsPath);
+
+            LogHelper.LogWriter("aa", "info1");
+
+            InitialQueryFileAppender();
+
+            lastFAppDirectoryName.ShouldBe(AppLogsPath);
+            lastbutOneFAppDirectoryName.ShouldBe("Debug");
         }
 
         [Test]
