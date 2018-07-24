@@ -8,8 +8,6 @@ namespace LogToDB
 {
     public class LogHelper
     {
-        private static readonly string AppLogsPath = "Logs";
-        private static readonly string LogFileAppender = "LogFileAppender";
         private static readonly string InfoLogging = "InfoLogging";
 
         /// <summary>
@@ -24,7 +22,11 @@ namespace LogToDB
             sb.AppendFormat("{0}", methodName);
             sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
+            
             var logInfoNew = LogManager.GetLogger(InfoLogging);
+            LogicalThreadContext.Properties["methodname"] = methodName ?? "";
+            LogicalThreadContext.Properties["pathname"] = logPath ?? "";
+            LogicalThreadContext.Properties["foldername"] = "";
             logInfoNew.Info(sb.ToString());
         }
 
@@ -41,7 +43,11 @@ namespace LogToDB
             sb.AppendFormat("{0}", methodName);
             sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
+            
             var logInfoNew = LogManager.GetLogger(InfoLogging);
+            LogicalThreadContext.Properties["methodname"] = methodName ?? "";
+            LogicalThreadContext.Properties["pathname"] = logPath ?? "";
+            LogicalThreadContext.Properties["foldername"] = folderName ?? "";
             logInfoNew.Info(sb.ToString());
         }
     }
