@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using log4net;
 
 namespace LogToDB
@@ -19,10 +16,8 @@ namespace LogToDB
         public static void LogWriter(string methodName, string logInfo, string logPath = "")
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}", methodName);
-            sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
-            
+
             var logInfoNew = LogManager.GetLogger(InfoLogging);
             LogicalThreadContext.Properties["methodname"] = methodName ?? "";
             LogicalThreadContext.Properties["pathname"] = logPath ?? "";
@@ -40,10 +35,8 @@ namespace LogToDB
         public static void LogWriterFolder(string methodName, string logInfo, string folderName, string logPath = "")
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}", methodName);
-            sb.AppendLine();
             sb.AppendFormat("{0}", logInfo);
-            
+
             var logInfoNew = LogManager.GetLogger(InfoLogging);
             LogicalThreadContext.Properties["methodname"] = methodName ?? "";
             LogicalThreadContext.Properties["pathname"] = logPath ?? "";
